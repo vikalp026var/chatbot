@@ -1,27 +1,18 @@
-# Use the official Python image from the Docker Hub
-FROM python:3.9-slim
+FROM python:3.8-slim
 
-# Set environment variables
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    libgl1-mesa-glx \
+    libglib2.0-0 \
+    && rm -rf /var/lib/apt/lists/*
 
-# Set the working directory in the container
 WORKDIR /app
+COPY . /app
 
-# Copy the requirements file into the container
-COPY requirements.txt /app/
-
-# Install the dependencies
+# Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the rest of the application code into the container
-COPY . /app/
-
-# Expose the port the app runs on
+# Set environment variable
+ENV OPENAI_API_KEY=${OPENAI_API_KEY}
 EXPOSE 8000
-
-# Define environment variables for OpenAI API key
-
-
-# Run the Flask application
 CMD ["python", "app.py"]
